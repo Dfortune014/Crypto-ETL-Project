@@ -2,10 +2,10 @@
 
 
 - **Architecture Diagram**
-  ![Full - Architecture Diagram](images/full.png)
+  ![Architecture Diagram](images/full.png)
 
 - **QuickSight Dashboard**
-  ![Full - Architecture Diagram](images/quicksight.png)
+  ![QuickSight Dashboard](images/quicksight.png)
 
 ---
 
@@ -65,11 +65,11 @@ It provides:
 - **Interactive dashboards** in QuickSight (market cap, top gainers, volume, trends).  
 - A demonstration of **real-world ETL and reliability patterns** in the cloud.  
 
----------------------------------------------------------
- 
- ## **Technical Solution**
- 
- 1. ---
+---
+
+## **Technical Solution**
+
+---
 
 ## 🟢 Phase 1 — Extraction (Summary)
 
@@ -107,7 +107,7 @@ Each row includes:
 ## 🔵 Phase 2 — Data Lake & Query Layer (Summary)
 
 **Goal:**  
-Next I organize and register processed data in an **AWS Data Lake** so it can be queried efficiently with Athena. This phase transforms raw snapshots into a structured, partitioned, analytics-ready format.
+Organize and register processed data in an **AWS Data Lake** so it can be queried efficiently with Athena. This phase transforms raw snapshots into a structured, partitioned, analytics-ready format.
 
 **Deliverables:**  
 - **S3 Data Lake Buckets**  
@@ -180,9 +180,9 @@ Next I organize and register processed data in an **AWS Data Lake** so it can be
 ---
 
 ### Why Parquet?
-- **Columnar format**: queries only scan needed fields → lower cost.  
-- **Partition pruning**: Athena queries only the relevant hour/day, not the whole dataset.  
-- **Compression (GZIP)**: smaller storage footprint, faster scans.  
+- **Columnar format**: queries only scan needed fields → lower cost  
+- **Partition pruning**: Athena queries only the relevant hour/day, not the whole dataset  
+- **Compression (GZIP)**: smaller storage footprint, faster scans  
 
 ---
 
@@ -208,7 +208,7 @@ LIMIT 10;
 ## 🟣 Phase 3 — Transformation & Materialization (Summary)
 
 **Goal:**  
-Convert the ingested snapshots into an **analytics-ready Parquet layer**, keeping every 5-minute observation but avoiding duplicate inserts, so downstream queries and dashboards are fast, reliable, and cheap to run.
+Convert the ingested snapshots into an **analytics-ready Parquet layer**, keeping every 5-minute observation while avoiding duplicate inserts, so downstream queries and dashboards are fast, reliable, and cost-effective.
 
 ---
 
@@ -275,49 +275,49 @@ Make the transformed Parquet data easily accessible to analysts, dashboards, and
 
 ### Deliverables
 - **Athena SQL Views** (curated for common use cases):  
-  - `v_latest_partition` → most recent partition metadata.  
-  - `v_latest_snapshot` → latest hour’s snapshot across all coins.  
-  - `v_market_cap` → coins ranked by market cap.  
-  - `v_top_100` → top 100 coins with prices, ranks, and changes.  
-  - `v_top_gainers` → coins with highest 24h % change.  
-  - `v_total_market_cap` → global market cap sum.  
-  - `v_trending` → top movers over the last 7 days.  
-  - `v_trendline_core` → BTC, ETH, USDT, SOL hourly prices (7 days).  
-  - `v_volume_24h` → ranked 24h trading volume.  
+  - `v_latest_partition` → most recent partition metadata  
+  - `v_latest_snapshot` → latest hour's snapshot across all coins  
+  - `v_market_cap` → coins ranked by market cap  
+  - `v_top_100` → top 100 coins with prices, ranks, and changes  
+  - `v_top_gainers` → coins with highest 24h % change  
+  - `v_total_market_cap` → global market cap sum  
+  - `v_trending` → top movers over the last 7 days  
+  - `v_trendline_core` → BTC, ETH, USDT, SOL hourly prices (7 days)  
+  - `v_volume_24h` → ranked 24h trading volume  
 
 - **QuickSight Dashboards** (visuals built on top of Athena views):  
-  - KPI Cards: Total Market Cap, Total 24h Volume.  
-  - Tables: Top 100 coins (prices, % changes, volumes, ranks).  
-  - Charts: Top Gainers, Trending Coins.  
+  - KPI Cards: Total Market Cap, Total 24h Volume  
+  - Tables: Top 100 coins (prices, % changes, volumes, ranks)  
+  - Charts: Top Gainers, Trending Coins  
   - Line Graphs:  
-    - Bitcoin 24h price trend (+ volume + % change).  
-    - Multi-coin 7-day trends for BTC, ETH, USDT, SOL.  
+    - Bitcoin 24h price trend (+ volume + % change)  
+    - Multi-coin 7-day trends for BTC, ETH, USDT, SOL  
 
 ---
 
 ### IAM & Security
 - **QuickSight service role** granted:  
-  - `s3:ListBucket`, `s3:GetBucketLocation` on analytics/results buckets.  
-  - `s3:GetObject` on `analytics/` Parquet data.  
-  - `s3:PutObject/GetObject/DeleteObject` on `query-results/`.  
-- Access scoped only to Athena results bucket (`crypto-analytics-athena-results`).  
+  - `s3:ListBucket`, `s3:GetBucketLocation` on analytics/results buckets  
+  - `s3:GetObject` on `analytics/` Parquet data  
+  - `s3:PutObject/GetObject/DeleteObject` on `query-results/`  
+- Access scoped only to Athena results bucket (`crypto-analytics-athena-results`)  
 
 ---
 
 ### Validation
-1. In Athena: run `SELECT * FROM v_latest_snapshot LIMIT 10;` to confirm data is fresh.  
+1. In Athena: run `SELECT * FROM v_latest_snapshot LIMIT 10;` to confirm data is fresh  
 2. In QuickSight:  
-   - Verify the Athena data source connection is valid.  
-   - Confirm rows are imported from each view.  
-   - Build or refresh dashboards on top of `crypto_data` views.  
+   - Verify the Athena data source connection is valid  
+   - Confirm rows are imported from each view  
+   - Build or refresh dashboards on top of `crypto_data` views  
 
 ---
 
 ### Why It Matters
-- Provides **ready-made insights** (no need to write raw queries).  
-- Dashboards update **hourly** in sync with the pipeline.  
-- Enables both **technical analysts** (via Athena SQL) and **business users** (via QuickSight) to use the same governed dataset.  
-- Queries are **fast and cheap** thanks to Parquet + partition pruning.  
+- Provides **ready-made insights** (no need to write raw queries)  
+- Dashboards update **hourly** in sync with the pipeline  
+- Enables both **technical analysts** (via Athena SQL) and **business users** (via QuickSight) to use the same governed dataset  
+- Queries are **fast and cost-effective** thanks to Parquet + partition pruning  
 
 ---
 ---
@@ -329,98 +329,98 @@ The project was implemented step by step, mirroring how production data pipeline
 ---
 
 ### 1. Infrastructure Setup
-- Defined infrastructure as code (IaC) using **Terraform**.  
+- Defined infrastructure as code (IaC) using **Terraform**  
 - Provisioned:
-  - **S3 buckets** (`archive`, `analytics`, `query-results`) with encryption, versioning, and block public access.  
-  - **IAM roles & policies** with least-privilege design for Lambda, Athena, QuickSight.  
-  - **Glue Data Catalog** database (`crypto_data`) and tables.  
-  - **EventBridge schedules** for periodic Lambda invocations.  
+  - **S3 buckets** (`archive`, `analytics`, `query-results`) with encryption, versioning, and block public access  
+  - **IAM roles & policies** with least-privilege design for Lambda, Athena, QuickSight  
+  - **Glue Data Catalog** database (`crypto_data`) and tables  
+  - **EventBridge schedules** for periodic Lambda invocations  
 
 ---
 
 ### 2. Phase 1 – Extraction
-- Developed the `fetchCryptoPrices` **Lambda** in Python.  
-- Integrated **CoinGecko API** with retries/backoff and deduplication.  
-- Scheduled Lambda via EventBridge (`rate(5 minutes)`).  
+- Developed the `fetchCryptoPrices` **Lambda** in Python  
+- Integrated **CoinGecko API** with retries/backoff and deduplication  
+- Scheduled Lambda via EventBridge (`rate(5 minutes)`)  
 - Wrote data into S3:
-  - `raw/` → full JSON payloads for audit/replay.  
-  - `processed/` → compressed NDJSON.gz, partitioned by `year/month/day/hour`.  
+  - `raw/` → full JSON payloads for audit/replay  
+  - `processed/` → compressed NDJSON.gz, partitioned by `year/month/day/hour`  
 - Validated by:
-  - Inspecting S3 objects.  
-  - Checking CloudWatch logs for successful runs and coin counts.  
+  - Inspecting S3 objects  
+  - Checking CloudWatch logs for successful runs and coin counts  
 
 ---
 
 ### 3. Phase 2 – Data Lake & Query Layer
-- Registered `processed_prices_raw` and `processed_prices` tables in **Glue Catalog**.  
-- Enabled **partition projection** to avoid manual partition management.  
-- Queried processed data with **Athena** to confirm ~250 coins per snapshot.  
-- Created `analytics_prices` table pointing to Parquet layer (to be populated in Phase 3).  
+- Registered `processed_prices_raw` and `processed_prices` tables in **Glue Catalog**  
+- Enabled **partition projection** to avoid manual partition management  
+- Queried processed data with **Athena** to confirm ~250 coins per snapshot  
+- Created `analytics_prices` table pointing to Parquet layer (to be populated in Phase 3)  
 
 ---
 
 ### 4. Phase 3 – Transformation & Materialization
-- Built `updateAnalyticsHourly` **Lambda** triggered by EventBridge (`cron(5 * * * ? *)`).  
-- Stored reusable `insert_last_hour.sql` in **SSM Parameter Store**.  
+- Built `updateAnalyticsHourly` **Lambda** triggered by EventBridge (`cron(5 * * * ? *)`)  
+- Stored reusable `insert_last_hour.sql` in **SSM Parameter Store**  
 - Lambda orchestrates **Athena INSERT queries**:
-  - Reads processed NDJSON.gz.  
-  - Casts/validates types with `TRY_CAST`.  
-  - Writes deduplicated snapshots into **analytics/** (Parquet).  
+  - Reads processed NDJSON.gz  
+  - Casts/validates types with `TRY_CAST`  
+  - Writes deduplicated snapshots into **analytics/** (Parquet)  
 - Verified by:
-  - CloudWatch logs showing query execution IDs.  
-  - Checking S3 `analytics/` partitions.  
-  - Querying Athena (`SELECT COUNT(DISTINCT id)` per hour).  
+  - CloudWatch logs showing query execution IDs  
+  - Checking S3 `analytics/` partitions  
+  - Querying Athena (`SELECT COUNT(DISTINCT id)` per hour)  
 
 ---
 
 ### 5. Phase 4 – Outputs & Consumption
-- Defined curated **Athena Views** (`v_latest_snapshot`, `v_top_100`, `v_trending`, etc.).  
-- Connected **QuickSight** to Athena Workgroup.  
+- Defined curated **Athena Views** (`v_latest_snapshot`, `v_top_100`, `v_trending`, etc.)  
+- Connected **QuickSight** to Athena Workgroup  
 - Built dashboards:
-  - Global KPIs (market cap, volume).  
-  - Top 100 coins table.  
-  - Trendline charts for BTC, ETH, USDT, SOL.  
-- Scheduled QuickSight SPICE refresh hourly to align with pipeline cadence.  
+  - Global KPIs (market cap, volume)  
+  - Top 100 coins table  
+  - Trendline charts for BTC, ETH, USDT, SOL  
+- Scheduled QuickSight SPICE refresh hourly to align with pipeline cadence  
 
 ---
 
 ### 6. Reliability & Monitoring
-- Attached **SQS DLQs** to EventBridge→Lambda for failed events.  
-- Used **CloudWatch Logs** for all Lambda executions.  
+- Attached **SQS DLQs** to EventBridge→Lambda for failed events  
+- Used **CloudWatch Logs** for all Lambda executions  
 - Configured **CloudWatch Alarms + SNS**:
-  - Trigger if DLQ > 0 messages.  
-  - Trigger if Lambda error count spikes.  
-- Recovery playbook: inspect DLQ, reprocess failed events, or manually rerun SQL for missing partitions.  
+  - Trigger if DLQ > 0 messages  
+  - Trigger if Lambda error count spikes  
+- Recovery playbook: inspect DLQ, reprocess failed events, or manually rerun SQL for missing partitions  
 
 ---
 
 ### 7. Validation & Testing
-- **Unit validation**: S3 objects contain expected keys and counts.  
-- **Integration validation**: Athena queries return ~250 distinct coins per snapshot.  
-- **End-to-end validation**: Dashboards refresh with new data each hour.  
-- **Failure testing**: Simulated CoinGecko API failure → verified DLQ capture and alerting.  
+- **Unit validation**: S3 objects contain expected keys and counts  
+- **Integration validation**: Athena queries return ~250 distinct coins per snapshot  
+- **End-to-end validation**: Dashboards refresh with new data each hour  
+- **Failure testing**: Simulated CoinGecko API failure → verified DLQ capture and alerting  
 
 ---
 
 ### 8. Final Deliverables
-- Terraform IaC definitions.  
-- Python Lambdas (`fetchCryptoPrices.py`, `updateAnalytics.py`).  
-- Glue Catalog schemas and Athena SQL views.  
-- QuickSight dashboards.  
-- Documentation (README + diagrams).  
+- Terraform IaC definitions  
+- Python Lambdas (`fetchCryptoPrices.py`, `updateAnalytics.py`)  
+- Glue Catalog schemas and Athena SQL views  
+- QuickSight dashboards  
+- Documentation (README + diagrams)  
 
 ---
 ---
 
 ## 🛠 Tools & Technologies 
 
-- **Infrastructure:** Terraform (IaC) to provision S3, IAM, Glue, Athena, Lambda, EventBridge.  
-- **Extraction:** Lambda (Python) + EventBridge to fetch CoinGecko data every 5 min → S3 (`raw/`, `processed/`).  
-- **Data Lake:** S3 analytics bucket (Parquet), Glue Data Catalog for schemas, partition projection for efficiency.  
-- **Transformation:** Lambda + Athena (hourly `INSERT … SELECT`), SQL templates stored in SSM Parameter Store.  
-- **Consumption:** Athena SQL views + QuickSight dashboards (market cap, 24h volume, top gainers, trends).  
-- **Security & Reliability:** IAM least privilege, CloudWatch logs/alarms, SQS DLQs, SSE-S3 encryption, bucket versioning.  
-- **Development:** Python (`boto3`, `urllib3`, `gzip`, `json`), AWS CLI for testing, Athena queries for validation.  
+- **Infrastructure:** Terraform (IaC) to provision S3, IAM, Glue, Athena, Lambda, EventBridge  
+- **Extraction:** Lambda (Python) + EventBridge to fetch CoinGecko data every 5 min → S3 (`raw/`, `processed/`)  
+- **Data Lake:** S3 analytics bucket (Parquet), Glue Data Catalog for schemas, partition projection for efficiency  
+- **Transformation:** Lambda + Athena (hourly `INSERT … SELECT`), SQL templates stored in SSM Parameter Store  
+- **Consumption:** Athena SQL views + QuickSight dashboards (market cap, 24h volume, top gainers, trends)  
+- **Security & Reliability:** IAM least privilege, CloudWatch logs/alarms, SQS DLQs, SSE-S3 encryption, bucket versioning  
+- **Development:** Python (`boto3`, `urllib3`, `gzip`, `json`), AWS CLI for testing, Athena queries for validation  
 
 ---
 
@@ -429,41 +429,41 @@ The project was implemented step by step, mirroring how production data pipeline
 ## ⚡ Challenges & Solutions
 
 **1. Handling API limits & duplicates**  
-- *Challenge:* CoinGecko API sometimes returns duplicates or fails with `429 Too Many Requests`.  
-- *Solution:* Added retry logic with exponential backoff and deduplication by `id` inside the Lambda.  
+- *Challenge:* CoinGecko API sometimes returns duplicates or fails with `429 Too Many Requests`  
+- *Solution:* Added retry logic with exponential backoff and deduplication by `id` inside the Lambda  
 
 **2. Storing large volumes of JSON efficiently**  
-- *Challenge:* Raw JSON is slow and costly to query in Athena.  
-- *Solution:* Wrote **processed NDJSON.gz** for ingestion, then converted to **Parquet** with hourly Lambda materialization.  
+- *Challenge:* Raw JSON is slow and costly to query in Athena  
+- *Solution:* Wrote **processed NDJSON.gz** for ingestion, then converted to **Parquet** with hourly Lambda materialization  
 
 **3. Schema drift & type errors**  
-- *Challenge:* Athena threw `HIVE_BAD_DATA` when numeric fields (e.g., `market_cap`) appeared as strings.  
-- *Solution:* Created a `processed_prices_raw` table with **all strings**, then casted fields safely with `TRY_CAST` during transformation.  
+- *Challenge:* Athena threw `HIVE_BAD_DATA` when numeric fields (e.g., `market_cap`) appeared as strings  
+- *Solution:* Created a `processed_prices_raw` table with **all strings**, then casted fields safely with `TRY_CAST` during transformation  
 
 **4. Partition management**  
-- *Challenge:* Manual partition updates (`MSCK REPAIR`) don’t scale.  
-- *Solution:* Enabled **partition projection** in Glue Catalog to auto-discover partitions without manual updates.  
+- *Challenge:* Manual partition updates (`MSCK REPAIR`) don't scale  
+- *Solution:* Enabled **partition projection** in Glue Catalog to auto-discover partitions without manual updates  
 
 **5. IAM access errors**  
-- *Challenge:* Athena queries failed with "Access Denied" on S3 and Glue.  
-- *Solution:* Iteratively refined IAM policies to follow **least privilege**, adding explicit permissions for Athena query results, Glue partitions, and analytics S3 prefixes.  
+- *Challenge:* Athena queries failed with "Access Denied" on S3 and Glue  
+- *Solution:* Iteratively refined IAM policies to follow **least privilege**, adding explicit permissions for Athena query results, Glue partitions, and analytics S3 prefixes  
 
 **6. QuickSight integration**  
-- *Challenge:* QuickSight initially couldn’t read Athena results due to missing bucket policies.  
-- *Solution:* Attached S3 bucket policy granting the QuickSight role `ListBucket`, `GetBucketLocation`, and `GetObject` on analytics and results prefixes.  
+- *Challenge:* QuickSight initially couldn't read Athena results due to missing bucket policies  
+- *Solution:* Attached S3 bucket policy granting the QuickSight role `ListBucket`, `GetBucketLocation`, and `GetObject` on analytics and results prefixes  
 
 **7. Reliability & Monitoring**  
-- *Challenge:* Failures could silently drop data or break the pipeline.  
-- *Solution:* Added **SQS DLQs** for EventBridge → Lambda, **CloudWatch Logs** for every function, and **SNS Alarms** for DLQ/message monitoring.  
+- *Challenge:* Failures could silently drop data or break the pipeline  
+- *Solution:* Added **SQS DLQs** for EventBridge → Lambda, **CloudWatch Logs** for every function, and **SNS Alarms** for DLQ/message monitoring  
 
 ---
 
 ### ✅ Outcome
 By solving these challenges, the pipeline is now:  
-- **Resilient** (handles API errors, failures go to DLQ).  
-- **Efficient** (Parquet + partition pruning lowers query cost).  
-- **Secure** (least-privilege IAM, encrypted S3, block public access).  
-- **Business-ready** (Athena views + QuickSight dashboards for real insights).  
+- **Resilient** (handles API errors, failures go to DLQ)  
+- **Efficient** (Parquet + partition pruning lowers query cost)  
+- **Secure** (least-privilege IAM, encrypted S3, block public access)  
+- **Business-ready** (Athena views + QuickSight dashboards for real insights)  
 
 ---
 
