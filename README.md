@@ -202,7 +202,7 @@ JOIN latest l
   ON a.year=l.year AND a.month=l.month AND a.day=l.day AND a.hour=l.hour
 ORDER BY market_cap DESC
 LIMIT 10;
-
+```
 ---
 
 ## 🟣 Phase 3 — Transformation & Materialization (Summary)
@@ -258,7 +258,8 @@ Convert the ingested snapshots into an **analytics-ready Parquet layer**, keepin
 1. Run Lambda manually or wait for hourly trigger.  
 2. Check CloudWatch logs → should show `ok: true` and the `query_id`.  
 3. Verify new files in S3 under `analytics/year=YYYY/month=MM/day=DD/hour=HH/`.  
-4. Run Athena query:  
+4. Run Athena query:
+
    ```sql
    SELECT COUNT(DISTINCT id) AS coins, COUNT(*) AS rows
    FROM crypto_data.analytics_prices
